@@ -2503,17 +2503,18 @@ async def auto_shutdown(ctx, to_cancel=None):
         ctx.logger.info("Shutting down due to inactivity.")
 
     while not ctx.exit_event.is_set():
-        if not ctx.client_activity_timers.values():
-            inactivity_shutdown()
-        else:
-            newest_activity = max(ctx.client_activity_timers.values())
-            delta = datetime.datetime.now(datetime.timezone.utc) - newest_activity
-            seconds = ctx.auto_shutdown - delta.total_seconds()
-            if seconds < 0:
-                inactivity_shutdown()
-            else:
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(ctx.exit_event.wait(), seconds)
+        pass
+        # if not ctx.client_activity_timers.values():
+        #     inactivity_shutdown()
+        # else:
+        #     newest_activity = max(ctx.client_activity_timers.values())
+        #     delta = datetime.datetime.now(datetime.timezone.utc) - newest_activity
+        #     seconds = ctx.auto_shutdown - delta.total_seconds()
+        #     if seconds < 0:
+        #         inactivity_shutdown()
+        #     else:
+        #         with contextlib.suppress(asyncio.TimeoutError):
+        #             await asyncio.wait_for(ctx.exit_event.wait(), seconds)
 
 
 def load_server_cert(path: str, cert_key: typing.Optional[str]) -> "ssl.SSLContext":
