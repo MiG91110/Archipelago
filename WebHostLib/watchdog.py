@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from WebHostLib.upload_handler import handle_new_run_folder
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -38,6 +39,7 @@ class WebHostEventHandler(FileSystemEventHandler):
 class FolderWatchdog:
     def __init__(self, path="/game"):
         self.path = os.path.abspath(path)
+        Path(self.path).mkdir(parents=True, exist_ok=True)
         self.observer = Observer()
 
     def start(self):
