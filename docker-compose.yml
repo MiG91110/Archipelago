@@ -1,0 +1,7 @@
+services: 
+ archipelago:
+    image: archipelago:latest
+    restart: unless-stopped
+    volumes:
+      - ../data:/data
+    network_mode: "host"
