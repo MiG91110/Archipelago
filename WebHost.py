@@ -118,7 +118,7 @@ if __name__ == "__main__":
         logging.error(f"Following worlds not loaded as they are invalid for WebHost: {invalid_worlds}")
     AutoWorldRegister.world_types = {k: v for k, v in AutoWorldRegister.world_types.items() if k not in invalid_worlds}
     from WebHostLib.watchdog import FolderWatchdog
-    watchdog = FolderWatchdog(".")
+    watchdog = FolderWatchdog("/game")
     watchdog.start()
     create_options_files()
     copy_tutorials_files_to_static()

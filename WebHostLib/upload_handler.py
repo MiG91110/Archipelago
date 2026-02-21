@@ -16,9 +16,7 @@ def handle_new_run_folder(folder_path):
             zip_path = os.path.join(folder_path, filename)
             with zipfile.ZipFile(zip_path, "r") as zf:
                 with db_session:
-                    print(f"[UPLOAD_HANDLER] LOHL ISCH WERDE AUSGEFÜHRT: {zf}")
                     seed = upload_zip_to_db(zf, owner=SYSTEM_OWNER)
-                    print(f"[UPLOAD_HANDLER] HAB ISCH SEED: {seed}")
                     if seed:
                         create_room_for_seed(seed, owner=SYSTEM_OWNER)
             break
