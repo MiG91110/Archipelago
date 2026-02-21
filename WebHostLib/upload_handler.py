@@ -25,5 +25,5 @@ def handle_new_run_folder(folder_path):
 def create_room_for_seed(seed, owner):
     room = Room(seed=seed, owner=owner, tracker=uuid4())
     commit()
-    print(f"[ROOM_HANDLER] Neuer Room für Seed {seed.id}: Room ID {room.id}")
+    print(f"[ROOM_HANDLER] New Room for Seed {seed.id}: Room ID {room.id}")
     return room
