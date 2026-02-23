@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
-from WebHostLib.upload_handler import handle_new_run_folder
+from WebHostLib.upload_handler import handle_new_run_folder, handle_run_folder_deleted
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from .models import Room
 
 class WebHostEventHandler(FileSystemEventHandler):
     def __init__(self, base_path):
@@ -34,6 +35,7 @@ class WebHostEventHandler(FileSystemEventHandler):
         if not self._is_direct_child(event.src_path):
             return
         print(f"[WATCHDOG] File deleted: {event.src_path}")
+        handle_run_folder_deleted(event.src_path)
 
 
 class FolderWatchdog:
@@ -53,3 +55,12 @@ class FolderWatchdog:
             self.observer.stop()
             self.observer.join()
             print("[WATCHDOG] stopped")
+
+#Watchdog Logik
+#   1. Schaue alle 10 Sekunden in welchen Unterordnern von /game sich game-zips befinden
+#   2. Ließ Namen der .zip, den Namen des Unterordners, den Inhalt von config.json aus (inkl. der Room und Seed-IDs)
+#   3. Berichte den aktuellen Zustand an eine Neue Klasse, die Untersucht, ob in diesen Daten ein Unterschied festzustellen ist
+#       3.1. Falls es einen Ordner gibt, dessen Daten noch keine Room-ID hat...
+#           3.1.1 ...Kreiere einen neuen Raum
+#           3.1.2 ...Schreibe die ID des neuen Raums in die config.json
+#       3.2. Falls eine Room-ID aus dem Bericht verschwunden ist, schließe den betroffenen Raum
