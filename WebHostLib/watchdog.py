@@ -1,8 +1,7 @@
 import os
+import time
 from pathlib import Path
 from WebHostLib.upload_handler import handle_new_run_folder, handle_run_folder_deleted
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 from .models import Room
 
 class WebHostEventHandler(FileSystemEventHandler):
@@ -46,9 +45,10 @@ class FolderWatchdog:
 
     def start(self):
         handler = WebHostEventHandler(self.path)
-        self.observer.schedule(handler, self.path, recursive=True)
-        self.observer.start()
         print(f"[WATCHDOG] Now Observing: {self.path}")
+        while True:
+            print(f"[WATCHDOG] Still Observing: {self.path}")
+            time.sleep(10)
 
     def stop(self):
         if self.observer.is_alive():
