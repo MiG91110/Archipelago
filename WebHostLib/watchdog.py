@@ -64,30 +64,29 @@ class FolderWatchdog:
                     with open(config_path, 'r') as file:
                         config = json.load(file)
                     room_id = config.get('Room_ID')
-                    seed_id = config.get('Seed_ID')
                     if room_id is not None:
                         print(f"it even has a Room_ID in it: {room_id}")
                     else:
                         print("But it has no Room_ID. Let me add one")
                         config['Room_ID'] = "RAUM JOONGE"
-                    if seed_id is not None:
-                        print(f"It even has a Seed_ID: {seed_id}")
-                    else:
-                        print("But it has no Seed_ID. Let me add one")
-                        config['Seed_ID'] = "SEED JOOONGE"
                     with open((config_path), 'w') as file:
                         json.dump(config, file, indent=4)
             
-        # with db_session:
-        #     rooms = select(
-        #         room for room in Room)
-        #     for room in rooms:
-        #         print (f"[UPLOAD HANDLER] Found this room: {room.id}")
-                #print (f"[UPLOAD HANDLER] It has the zip_file: {room.zip_file}")
-                #print (f"[UPLOAD HANDLER] It has the dir_path: {room.dir_path}")
-                #room.owner = 0
-                #print (f"[UPLOAD HANDLER] ID of room {room.id} is now {room.owner}")
-        #time.sleep(10)
+        with db_session:
+            rooms = select(room for room in Room)
+            for room in rooms:
+                print (f"[UPLOAD HANDLER] Found this room: {room.id}")
+                if room.zip_name:
+                    print (f"[UPLOAD HANDLER] It has the zip_name: {room.zip_name}")
+                else:
+                    print(f"[UPLOAD HANDLER] The zip_name is not set.")
+                if room.dir_path:
+                    print (f"[UPLOAD HANDLER] It has the dir_path: {room.dir_path}")
+                else:
+                    print(f"[UPLOAD HANDLER] The dir_path is not set.")
+                # room.owner = 0
+                # print (f"[UPLOAD HANDLER] ID of room {room.id} is now {room.owner}")
+        # time.sleep(10)
 
     def stop(self):
         if self.observer.is_alive():
@@ -96,7 +95,7 @@ class FolderWatchdog:
             print("[WATCHDOG] stopped")
 #Watchdog Logik
 #   1. Schaue alle 10 Sekunden in welchen Unterordnern von /game sich game-zips befinden
-#   2. Ließ Namen der .zip, den Namen des Unterordners, den Inhalt von config.json aus (inkl. der Room und Seed-IDs)
+#   2. Ließ Namen der .zip, den Namen des Unterordners, den Inhalt von config.json aus (inkl. der Room-ID)
 #   3. Berichte den aktuellen Zustand an eine Neue Klasse, die Untersucht, ob in diesen Daten ein Unterschied festzustellen ist
 #       3.1. Falls es einen Ordner gibt, dessen Daten noch keine Room-ID hat...
 #           3.1.1 ...Kreiere einen neuen Raum
