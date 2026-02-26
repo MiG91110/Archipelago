@@ -1,5 +1,6 @@
 import os
 import time
+import json
 from pathlib import Path
 from WebHostLib.upload_handler import handle_new_run_folder, handle_run_folder_deleted
 from .models import Room
@@ -48,7 +49,35 @@ class FolderWatchdog:
         print(f"[WATCHDOG] Now Observing: {self.path}")
         #while True:
         print(f"[WATCHDOG] Still Observing: {self.path}")
-        
+        run_dirs: Path[str] = os.listdir(self.path)
+        for run_dir in run_dirs:
+            print(f"[UPLOAD HANDLER] I found this cool Run: {run_dir}")
+            run_dir_fullpath = os.path.join(self.path, run_dir)
+            for filename in os.listdir(run_dir_fullpath):
+                if filename.lower().endswith(".zip"):
+                    zip_path = os.path.join(run_dir_fullpath, filename)
+            print(f"It has this awesome zip in it: {zip_path}")
+            for filename in os.listdir(run_dir_fullpath):
+                if filename.lower() == ("config.json"):
+                    config_path = os.path.join(run_dir_fullpath, "config.json")
+                    print(f"It also has a config.json named: {config_path}")
+                    with open(config_path, 'r') as file:
+                        config = json.load(file)
+                    room_id = config.get('Room_ID')
+                    seed_id = config.get('Seed_ID')
+                    if room_id is not None:
+                        print(f"it even has a Room_ID in it: {room_id}")
+                    else:
+                        print("But it has no Room_ID. Let me add one")
+                        config['Room_ID'] = "RAUM JOONGE"
+                    if seed_id is not None:
+                        print(f"It even has a Seed_ID: {seed_id}")
+                    else:
+                        print("But it has no Seed_ID. Let me add one")
+                        config['Seed_ID'] = "SEED JOOONGE"
+                    with open((config_path), 'w') as file:
+                        json.dump(config, file, indent=4)
+            
         # with db_session:
         #     rooms = select(
         #         room for room in Room)
