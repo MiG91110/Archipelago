@@ -52,9 +52,6 @@ def get_app() -> "Flask":
     cache.init_app(app)
     db.bind(**app.config["PONY"])
     db.generate_mapping(create_tables=True)
-    #TODO: make a funkction automating this workarround
-    #db.drop_all_tables(with_all_data=True)
-    #db.create_tables()
     return app
 
 
@@ -120,9 +117,12 @@ if __name__ == "__main__":
     if invalid_worlds:
         logging.error(f"Following worlds not loaded as they are invalid for WebHost: {invalid_worlds}")
     AutoWorldRegister.world_types = {k: v for k, v in AutoWorldRegister.world_types.items() if k not in invalid_worlds}
+    import threading
     from WebHostLib.watchdog import FolderWatchdog
     watchdog = FolderWatchdog("/game")
-    watchdog.start()
+    watchdog_thread = threading.Thread(target=watchdog.start)
+    watchdog_thread.daemon = True
+    watchdog_thread.start()
     create_options_files()
     copy_tutorials_files_to_static()
     if app.config["SELFLAUNCH"]:
