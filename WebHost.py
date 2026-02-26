@@ -52,6 +52,9 @@ def get_app() -> "Flask":
     cache.init_app(app)
     db.bind(**app.config["PONY"])
     db.generate_mapping(create_tables=True)
+    #TODO: make a funkction automating this workarround
+    #db.drop_all_tables(with_all_data=True)
+    #db.create_tables()
     return app
 
 

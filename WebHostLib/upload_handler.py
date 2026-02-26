@@ -28,14 +28,6 @@ def handle_run_folder_deleted(folder_path):
         if filename.lower().equals("config.json"):
             config_file_path = os.path.join(folder_path, filename)
             deleted_folder_run_id = "oEpbMuf9TTOpc26_2mW0Eg"
-            with db_session:
-                rooms = select(
-                    room for room in Room)
-                for room in rooms:
-                    if room.id == deleted_folder_run_id:
-                        print (f"[UPLOAD HANDLER] Found this room: {room.id}")
-                        room.owner = 0
-                        print (f"[UPLOAD HANDLER] ID of room {room.id} is now {room.owner}")
 
 @db_session
 def create_room_for_seed(seed, owner):

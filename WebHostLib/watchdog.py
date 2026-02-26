@@ -3,8 +3,9 @@ import time
 from pathlib import Path
 from WebHostLib.upload_handler import handle_new_run_folder, handle_run_folder_deleted
 from .models import Room
+from pony.orm import db_session, commit, select
 
-class WebHostEventHandler(FileSystemEventHandler):
+class WebHostEventHandler():
     def __init__(self, base_path):
         self.base_path = os.path.abspath(base_path)
 
@@ -41,21 +42,29 @@ class FolderWatchdog:
     def __init__(self, path="/game"):
         self.path = os.path.abspath(path)
         Path(self.path).mkdir(parents=True, exist_ok=True)
-        self.observer = Observer()
 
     def start(self):
         handler = WebHostEventHandler(self.path)
         print(f"[WATCHDOG] Now Observing: {self.path}")
-        while True:
-            print(f"[WATCHDOG] Still Observing: {self.path}")
-            time.sleep(10)
+        #while True:
+        print(f"[WATCHDOG] Still Observing: {self.path}")
+        
+        # with db_session:
+        #     rooms = select(
+        #         room for room in Room)
+        #     for room in rooms:
+        #         print (f"[UPLOAD HANDLER] Found this room: {room.id}")
+                #print (f"[UPLOAD HANDLER] It has the zip_file: {room.zip_file}")
+                #print (f"[UPLOAD HANDLER] It has the dir_path: {room.dir_path}")
+                #room.owner = 0
+                #print (f"[UPLOAD HANDLER] ID of room {room.id} is now {room.owner}")
+        #time.sleep(10)
 
     def stop(self):
         if self.observer.is_alive():
             self.observer.stop()
             self.observer.join()
             print("[WATCHDOG] stopped")
-
 #Watchdog Logik
 #   1. Schaue alle 10 Sekunden in welchen Unterordnern von /game sich game-zips befinden
 #   2. Ließ Namen der .zip, den Namen des Unterordners, den Inhalt von config.json aus (inkl. der Room und Seed-IDs)

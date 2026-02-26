@@ -31,6 +31,8 @@ class Room(db.Entity):
     tracker = Optional(UUID, index=True)
     # Port special value -1 means the server errored out. Another attempt can be made with a page refresh
     last_port = Optional(int, default=lambda: 0)
+    zip_name = Optional(str)
+    dir_path = Optional(str)
 
 
 class Seed(db.Entity):
