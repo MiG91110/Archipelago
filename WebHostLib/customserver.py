@@ -310,10 +310,7 @@ def run_server_process(name: str, ponyconfig: dict, static_server_data: dict,
                     )
                     await ctx.server
                 except OSError:  # likely port in use
-                    ctx.server = websockets.serve(
-                        functools.partial(server, ctx=ctx), ctx.host, 0, ssl=get_ssl_context())
-
-                    await ctx.server
+                    raise ValueError(f"Port {ctx.port} in use")
                 port = 0
                 for wssocket in ctx.server.ws_server.sockets:
                     socketname = wssocket.getsockname()
