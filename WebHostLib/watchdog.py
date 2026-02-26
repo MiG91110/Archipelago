@@ -49,13 +49,18 @@ class FolderWatchdog:
         print(f"[WATCHDOG] Now Observing: {self.path}")
         #while True:
         print(f"[WATCHDOG] Still Observing: {self.path}")
+        
         run_dirs: Path[str] = os.listdir(self.path)
         for run_dir in run_dirs:
             print(f"[UPLOAD HANDLER] I found this cool Run: {run_dir}")
             run_dir_fullpath = os.path.join(self.path, run_dir)
+            zip_path = None
             for filename in os.listdir(run_dir_fullpath):
                 if filename.lower().endswith(".zip"):
                     zip_path = os.path.join(run_dir_fullpath, filename)
+            if zip_path is None:
+                print(f"[UPLOAD HANDLER] But it has no .zip file in it.")
+                continue
             print(f"It has this awesome zip in it: {zip_path}")
             for filename in os.listdir(run_dir_fullpath):
                 if filename.lower() == ("config.json"):
