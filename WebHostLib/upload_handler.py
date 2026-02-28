@@ -5,6 +5,7 @@ import zipfile
 import time
 from pony.orm import db_session, commit
 
+#TODO: This is a very hacky way to handle runs that are started outside of the webhost, but it works for now. Maybe we can find a better way to do this in the future.
 SYSTEM_OWNER = "5501476a-c10f-42e2-9dc6-5e2452e3a0a1"
 
 def handle_new_run(zip_path):
@@ -18,6 +19,7 @@ def handle_new_run(zip_path):
 
 @db_session
 def create_room_for_seed(seed, owner):
+    #TODO: Let the folder watchdog report if there is a port determined for the run, and use that port instead of the default one.
     room = Room(seed=seed, owner=owner, tracker=uuid4(),last_port=38290)
     commit()
     print(f"[ROOM_HANDLER] New Room for Seed {seed.id}: Room ID {room.id}")

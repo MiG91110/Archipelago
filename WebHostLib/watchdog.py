@@ -5,8 +5,8 @@ from pathlib import Path
 from WebHostLib.upload_handler import handle_new_run
 from WebHostLib.autolauncher import cleanup
 from uuid import UUID
-from .models import Room
-from pony.orm import db_session, select
+from .models import Room, Command
+from pony.orm import db_session, select, commit
 
 
 class FolderWatchdog:
@@ -22,27 +22,25 @@ class FolderWatchdog:
             #Check if there are Directories with Runs, which need to be started
             run_dirs: Path[str] = os.listdir(self.path)
             for run_dir in run_dirs:
-                print(f"[WATCHDOG] I found this cool Run: {run_dir}")
+                print(f"[WATCHDOG] I found this Run: {run_dir}")
                 run_dir_fullpath = os.path.join(self.path, run_dir)
                 zip_path = None
                 for filename in os.listdir(run_dir_fullpath):
                     if filename.lower().endswith(".zip"):
                         zip_path = os.path.join(run_dir_fullpath, filename)
                 if zip_path is None:
-                    print(f"[WATCHDOG] But it has no .zip file in it.")
+                    print(f"[WATCHDOG] But it has no zip file in it.")
                     continue
-                print(f"[WATCHDOG] It has this awesome zip in it: {zip_path}")
+                print(f"[WATCHDOG] It has this zip in it: {zip_path}")
                 for filename in os.listdir(run_dir_fullpath):
                     if filename.lower() == ("config.json"):
                         config_path = os.path.join(run_dir_fullpath, "config.json")
-                        print(f"[WATCHDOG] It also has a config.json named: {config_path}")
+                        print(f"[WATCHDOG] It has a config.json named: {config_path}")
                         with open(config_path, 'r') as file:
                             config = json.load(file)
                         room_id = config.get('Room_ID')
-                        if room_id is not None:
-                            print(f"[WATCHDOG] It even has a Room_ID in it: {room_id}. No Action needed")
-                        else:
-                            print("[WATCHDOG] But it has no Room_ID. Let's create a room.")
+                        if room_id is None:
+                            print("[WATCHDOG] It has no Room_ID. Now creating room.")
                             room_id = handle_new_run(zip_path).id
                             config['Room_ID'] = str(room_id)
                         with open((config_path), 'w') as file:
@@ -65,6 +63,9 @@ class FolderWatchdog:
                             room_obsolete = False
                     if room_obsolete:
                         print(f"[WATCHDOG] No corresponding id found in config.json. Now closing Room")
+                        Command(room=room, commandtext="/exit")
+                        commit()
+                        time.sleep(5)
                         room.owner = UUID(int=0)
                         cleanup()
             time.sleep(10)
