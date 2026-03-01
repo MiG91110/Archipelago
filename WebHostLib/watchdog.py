@@ -39,7 +39,8 @@ class Watchdog:
                         room_id = config.get('Room_ID')
                         if room_id is None:
                             print("[WATCHDOG] It has no Room_ID. Now creating room.")
-                            room_id = handle_new_run(zip_path).id
+                            port = self.find_port_for_run(run_dir)
+                            room_id = handle_new_run(zip_path, port).id
                             config['Room_ID'] = str(room_id)
                         with open((config_path), 'w') as file:
                             json.dump(config, file, indent=4)
@@ -62,3 +63,9 @@ class Watchdog:
                     if room_obsolete:
                         handle_obsolete_room(room)
             time.sleep(10)
+        
+    def find_port_for_run(self, run_dir):
+        port_in_dirname = run_dir[-5:]
+        if port_in_dirname is not None and port_in_dirname.isdigit():
+            return int(port_in_dirname)
+        return None
