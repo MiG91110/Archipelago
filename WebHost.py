@@ -118,8 +118,8 @@ if __name__ == "__main__":
         logging.error(f"Following worlds not loaded as they are invalid for WebHost: {invalid_worlds}")
     AutoWorldRegister.world_types = {k: v for k, v in AutoWorldRegister.world_types.items() if k not in invalid_worlds}
     import threading
-    from WebHostLib.watchdog import FolderWatchdog
-    watchdog = FolderWatchdog("/game")
+    from WebHostLib.watchdog import Watchdog
+    watchdog = Watchdog("/game")
     watchdog_thread = threading.Thread(target=watchdog.start)
     watchdog_thread.daemon = True
     watchdog_thread.start()

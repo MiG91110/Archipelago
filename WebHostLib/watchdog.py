@@ -9,7 +9,7 @@ from .models import Room, Command
 from pony.orm import db_session, select, commit
 
 
-class FolderWatchdog:
+class Watchdog:
     def __init__(self, path="/game"):
         self.path = os.path.abspath(path)
         Path(self.path).mkdir(parents=True, exist_ok=True)
