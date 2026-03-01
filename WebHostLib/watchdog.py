@@ -2,11 +2,9 @@ import os
 import time
 import json
 from pathlib import Path
-from WebHostLib.upload_handler import handle_new_run
-from WebHostLib.autolauncher import cleanup
-from uuid import UUID
-from .models import Room, Command
-from pony.orm import db_session, select, commit
+from pony.orm import db_session, select
+from WebHostLib.watchdog_result_handler import handle_new_run, handle_obsolete_room
+from .models import Room
 
 
 class Watchdog:
@@ -62,10 +60,5 @@ class Watchdog:
                         if config.get('Room_ID') == str(room.id):
                             room_obsolete = False
                     if room_obsolete:
-                        print(f"[WATCHDOG] No corresponding id found in config.json. Now closing Room")
-                        Command(room=room, commandtext="/exit")
-                        commit()
-                        time.sleep(5)
-                        room.owner = UUID(int=0)
-                        cleanup()
+                        handle_obsolete_room(room)
             time.sleep(10)

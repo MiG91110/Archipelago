@@ -1,9 +1,10 @@
-from WebHostLib.upload import upload_zip_to_db
-from WebHostLib.models import Room
-from uuid import uuid4
 import zipfile
 import time
+from uuid import UUID, uuid4
 from pony.orm import db_session, commit
+from WebHostLib.upload import upload_zip_to_db
+from WebHostLib.models import Room, Command
+from WebHostLib.autolauncher import cleanup
 
 #TODO: This is a very hacky way to handle runs that are started outside of the webhost, but it works for now. Maybe we can find a better way to do this in the future.
 SYSTEM_OWNER = "5501476a-c10f-42e2-9dc6-5e2452e3a0a1"
@@ -16,6 +17,15 @@ def handle_new_run(zip_path):
             if seed:
                 room = create_room_for_seed(seed, owner=SYSTEM_OWNER)
                 return room
+
+def handle_obsolete_room(room):
+    with db_session:
+            print(f"[WATCHDOG] No corresponding id found in config.json. Now closing Room")
+            Command(room=room, commandtext="/exit")
+            commit()
+            time.sleep(5)
+            room.owner = UUID(int=0)
+            cleanup()
 
 @db_session
 def create_room_for_seed(seed, owner):
