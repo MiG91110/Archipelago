@@ -20,7 +20,6 @@ def handle_new_run(zip_path, port):
 
 def handle_obsolete_room(room):
     with db_session:
-            print(f"[WATCHDOG] No corresponding id found in config.json. Now closing Room")
             Command(room=room, commandtext="/exit")
             commit()
             time.sleep(5)
