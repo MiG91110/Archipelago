@@ -216,27 +216,28 @@ def user_content():
     seeds = select(seed for seed in Seed)
     return render_template("userContent.html", rooms=rooms, seeds=seeds)
 
-# Disabled as the watchdog will take care of cleaning up seeds that are no longer active, and this could cause issues if a user accidentally clicks it.
-# @app.route("/disown_seed/<suuid:seed>", methods=["GET"])
-# def disown_seed(seed):
-#     seed = Seed.get(id=seed)
-#     if not seed:
-#         return abort(404)
-#     if seed.owner !=  session["_id"]:
-#         return abort(403)
+@app.route("/disown_seed/<suuid:seed>", methods=["GET"])
+def disown_seed(seed):
+    seed = Seed.get(id=seed)
+    if not seed:
+        return abort(404)
+    if seed.owner !=  session["_id"]:
+        return abort(403)
     
-#     seed.owner = 0
+    # Disabled as the watchdog will take care of cleaning up seeds that are no longer active, and this could cause issues if a user accidentally clicks it.
+    #seed.owner = 0
 
-#     return redirect(url_for("user_content"))
+    return redirect(url_for("user_content"))
 
+@app.route("/disown_room/<suuid:room>", methods=["GET"])
+def disown_room(room):
+    room = Room.get(id=room)
+    if not room:
+        return abort(404)
+    if room.owner !=  session["_id"]:
+        return abort(403)
 
-# Disabled as the watchdog will take care of cleaning up rooms that are no longer active, and this could cause issues if a user accidentally clicks it.
-# @app.route("/disown_room/<suuid:room>", methods=["GET"])
-# def disown_room(room):
-#     room = Room.get(id=room)
-#     if not room:
-#         return abort(404)
+    # Disabled as the watchdog will take care of cleaning up rooms that are no longer active, and this could cause issues if a user accidentally clicks it.
+    #room.owner = 0
 
-#     room.owner = 0
-
-#     return redirect(url_for("user_content"))
+    return redirect(url_for("user_content"))
