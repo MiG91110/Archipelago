@@ -9,7 +9,7 @@ from . import api_endpoints, get_players
 @api_endpoints.route('/get_rooms')
 def get_rooms():
     response = []
-    for room in select(room for room in Room if room.owner == session["_id"]):
+    for room in select(room for room in Room):
         response.append({
             "room_id": to_url(room.id),
             "seed_id": to_url(room.seed.id),

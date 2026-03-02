@@ -192,23 +192,22 @@ def display_log(room: UUID) -> Union[str, Response, Tuple[str, int]]:
     room = Room.get(id=room)
     if room is None:
         return abort(404)
-    if room.owner == session["_id"]:
-        file_path = os.path.join("logs", str(room.id) + ".txt")
-        try:
-            log = open(file_path, "rb")
-            range_header = request.headers.get("Range")
-            if range_header:
-                range_type, range_values = range_header.split('=')
-                start, end = map(str.strip, range_values.split('-', 1))
-                if range_type != "bytes" or end != "":
-                    return "Unsupported range", 500
-                # NOTE: we skip Content-Range in the response here, which isn't great but works for our JS
-                return Response(_read_log(log, int(start)), mimetype="text/plain", status=206)
-            return Response(_read_log(log), mimetype="text/plain")
-        except FileNotFoundError:
-            return Response(f"Logfile {file_path} does not exist. "
-                            f"Likely a crash during spinup of multiworld instance or it is still spinning up.",
-                            mimetype="text/plain")
+    file_path = os.path.join("logs", str(room.id) + ".txt")
+    try:
+        log = open(file_path, "rb")
+        range_header = request.headers.get("Range")
+        if range_header:
+            range_type, range_values = range_header.split('=')
+            start, end = map(str.strip, range_values.split('-', 1))
+            if range_type != "bytes" or end != "":
+                return "Unsupported range", 500
+            # NOTE: we skip Content-Range in the response here, which isn't great but works for our JS
+            return Response(_read_log(log, int(start)), mimetype="text/plain", status=206)
+        return Response(_read_log(log), mimetype="text/plain")
+    except FileNotFoundError:
+        return Response(f"Logfile {file_path} does not exist. "
+                        f"Likely a crash during spinup of multiworld instance or it is still spinning up.",
+                        mimetype="text/plain")
 
     return "Access Denied", 403
 
