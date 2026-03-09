@@ -4,7 +4,9 @@ import json
 from pathlib import Path
 from pony.orm import db_session, select
 from WebHostLib.watchdog_result_handler import handle_new_run, handle_obsolete_room
+from WebHostLib import to_url
 from .models import Room
+from flask import url_for
 
 
 class Watchdog:
@@ -40,10 +42,13 @@ class Watchdog:
                         if room_id is None:
                             print(f"[WATCHDOG] Directory {run_dir} found. It has no Room_ID. Now creating room.")
                             port = self.find_port_for_run(run_dir)
-                            room_id = handle_new_run(zip_path, port).id
+                            room = handle_new_run(zip_path, port)
+                            room_id = room.id
+                            room_suuid = to_url(room.id)
                             config['Room_ID'] = str(room_id)
-                        with open((config_path), 'w') as file:
-                            json.dump(config, file, indent=4)
+                            config['Room_SUUID'] = room_suuid
+                            with open((config_path), 'w') as file:
+                                json.dump(config, file, indent=4)
                 
             #Set rooms which have no corresponding run directory to ownerless
             with db_session:
