@@ -16,7 +16,7 @@ def handle_new_run(zip_path, port):
             seed = upload_zip_to_db(zf, owner=SYSTEM_OWNER)
             if seed:
                 room = create_room_for_seed(seed, owner=SYSTEM_OWNER, port=port)
-                return room
+                return room, seed
 
 def handle_obsolete_room(room):
     with db_session:

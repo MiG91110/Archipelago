@@ -42,11 +42,15 @@ class Watchdog:
                         if room_id is None:
                             print(f"[WATCHDOG] Directory {run_dir} found. It has no Room_ID. Now creating room.")
                             port = self.find_port_for_run(run_dir)
-                            room = handle_new_run(zip_path, port)
+                            room, seed = handle_new_run(zip_path, port)
+                            seed_id = seed.id
                             room_id = room.id
+                            seed_suuid = to_url(seed_id)
                             room_suuid = to_url(room.id)
                             config['Room_ID'] = str(room_id)
+                            config['Seed_ID'] = str(seed_id)
                             config['Room_SUUID'] = room_suuid
+                            config['Seed_SUUID'] = seed_suuid
                             with open((config_path), 'w') as file:
                                 json.dump(config, file, indent=4)
                 
