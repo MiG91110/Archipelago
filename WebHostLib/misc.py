@@ -218,11 +218,11 @@ def host_room_command(room: UUID):
     if room is None:
         return abort(404)
 
-    if room.owner == session["_id"]:
-        cmd = request.form["cmd"]
-        if cmd:
-            Command(room=room, commandtext=cmd)
-            commit()
+    #if room.owner == session["_id"]: -> Line disabled as all users should be able to send commands to the room, not just the owner. This is required for the folder watchdog to be able to send the /exit command to close obsolete rooms.
+    cmd = request.form["cmd"]
+    if cmd:
+        Command(room=room, commandtext=cmd)
+        commit()
     return redirect(url_for("host_room", room=room.id))
 
 
