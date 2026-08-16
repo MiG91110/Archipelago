@@ -22,16 +22,16 @@ class Watchdog:
             #Check if there are Directories with Runs, which need to be started
             run_dirs: Path[str] = [d for d in os.listdir(self.path) if os.path.isdir(os.path.join(self.path, d))]
             for run_dir in run_dirs:
-                print(f"[WATCHDOG] I found this Run: {run_dir}")
+                #print(f"[WATCHDOG] I found this Dir: {run_dir}")
                 run_dir_fullpath = os.path.join(self.path, run_dir)
                 zip_path = None
                 for filename in os.listdir(run_dir_fullpath):
                     if filename.lower().endswith(".zip"):
                         zip_path = os.path.join(run_dir_fullpath, filename)
                 if zip_path is None:
-                    print(f"[WATCHDOG] But it has no zip file in it.")
+                    #print(f"[WATCHDOG] But it has no zip file in it.")
                     continue
-                print(f"[WATCHDOG] It has this zip in it: {zip_path}")
+                #print(f"[WATCHDOG] It has this zip in it: {zip_path}")
                 for filename in os.listdir(run_dir_fullpath):
                     if filename.lower() == ("config.json"):
                         config_path = os.path.join(run_dir_fullpath, "config.json")
@@ -62,8 +62,8 @@ class Watchdog:
             with db_session:
                 rooms = select(room for room in Room)
                 for room in rooms:
-                    print (f"[WATCHDOG] Found this room: {room.id}")
-                    print (f"[WATCHDOG] Now checking if Room id is obsolete")
+                    #print (f"[WATCHDOG] Found this room: {room.id}")
+                    #print (f"[WATCHDOG] Now checking if Room id is obsolete")
                     room_obsolete = True
                     for run_dir in run_dirs:
                         config_path = os.path.join(self.path, run_dir, "config.json")
